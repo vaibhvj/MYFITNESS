@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StrongTrack AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <h1>StrongTrack AI</h1>
+        <p>Your AI-powered personal trainer</p>
+      </div>
+      <div class="header-actions">
+        <button id="darkModeToggle" class="chip">🌙 Dark Mode</button>
+        <button id="printPlanBtn" class="chip">🖨️ Print Weekly Chart</button>
+        <button id="exportPdfBtn" class="chip">📄 Export Progress PDF</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="card" id="profileCard">
+        <h2>1️⃣ User Profile Setup</h2>
+        <form id="profileForm" class="grid">
+          <label>Name <input required name="name" /></label>
+          <label>Age <input required type="number" min="10" name="age" /></label>
+          <label>Height (cm) <input required type="number" min="100" name="height" /></label>
+          <label>Weight (kg) <input required type="number" min="20" name="weight" /></label>
+          <label>Target Weight (kg) <input required type="number" min="20" name="targetWeight" /></label>
+          <label>
+            Goal
+            <select required name="goal">
+              <option value="Muscle Gain">Muscle Gain</option>
+              <option value="Fat Loss">Fat Loss</option>
+              <option value="Strength">Strength</option>
+              <option value="Posture Improvement">Posture Improvement</option>
+              <option value="General Fitness">General Fitness</option>
+            </select>
+          </label>
+          <label>
+            Experience Level
+            <select required name="experience">
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </label>
+          <label>
+            Available Equipment
+            <select required name="equipment">
+              <option value="None">None</option>
+              <option value="Dumbbells">Dumbbells</option>
+              <option value="Gym Access">Gym Access</option>
+            </select>
+          </label>
+          <button class="btn primary" type="submit">Generate AI Plan</button>
+        </form>
+      </section>
+
+      <section class="card" id="dashboardCard">
+        <h2>2️⃣ Dashboard</h2>
+        <div id="welcomeMessage" class="muted">Complete your profile to unlock your personalized dashboard.</div>
+        <div class="kpi-grid" id="dailyGoals"></div>
+        <h3>📊 Progress Section</h3>
+        <div class="progress-wrap" id="progressSection"></div>
+      </section>
+
+      <section class="card">
+        <h2>3️⃣ Weekly Workout Plan (Auto Generated)</h2>
+        <div id="dailyBaseline" class="baseline"></div>
+        <div class="table-wrap">
+          <table id="workoutTable">
+            <thead>
+              <tr>
+                <th>Day</th>
+                <th>Focus</th>
+                <th>Exercise</th>
+                <th>Sets × Reps</th>
+                <th>Duration</th>
+                <th>Demo</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <h3>Add Your Own Fitness Chart Row</h3>
+        <form id="customWorkoutForm" class="inline-form">
+          <input name="day" placeholder="Day" required />
+          <input name="focus" placeholder="Focus" required />
+          <input name="exercise" placeholder="Exercise" required />
+          <input name="sets" placeholder="Sets×Reps" required />
+          <input name="duration" placeholder="Duration" required />
+          <button class="btn" type="submit">Add Row</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>5️⃣ Diet Planner</h2>
+        <div id="dietPlan" class="grid diet-grid"></div>
+        <div class="protein">
+          <div class="row"><strong>Protein completion</strong><span id="proteinText"></span></div>
+          <progress id="proteinProgress" max="100" value="0"></progress>
+          <button id="logProteinBtn" class="btn">+ Log 25g Protein</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>6️⃣ Progress Tracker</h2>
+        <form id="progressForm" class="inline-form">
+          <input type="number" step="0.1" name="weekWeight" placeholder="Weekly Weight (kg)" required />
+          <input type="number" name="waist" placeholder="Waist (cm)" required />
+          <input type="number" name="pushups" placeholder="Push-ups Max" required />
+          <input type="number" name="squats" placeholder="Squats Max" required />
+          <button class="btn" type="submit">Log Progress</button>
+        </form>
+        <canvas id="progressChart" height="130"></canvas>
+      </section>
+
+      <section class="card">
+        <h2>7️⃣ Smart AI Features</h2>
+        <ul id="smartList"></ul>
+        <div class="row">
+          <button id="painBtn" class="btn warning">Report Pain Today</button>
+          <button id="notifyBtn" class="btn">Enable Daily Motivation</button>
+          <button id="stepSyncBtn" class="btn">Sync Steps</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>9️⃣ AI Chat Coach</h2>
+        <div id="chatLog" class="chat"></div>
+        <form id="chatForm" class="inline-form">
+          <input id="chatInput" placeholder="Ask coach anything…" required />
+          <button class="btn primary" type="submit">Send</button>
+        </form>
+      </section>
+    </main>
+
+    <dialog id="workoutDialog">
+      <h3 id="liveTitle">Live Workout Mode</h3>
+      <img id="demoImage" alt="Exercise demo" />
+      <div class="row">
+        <div><strong>Timer:</strong> <span id="timer">00:30</span></div>
+        <div><strong>Reps:</strong> <span id="repCount">0</span></div>
+      </div>
+      <div class="row">
+        <button id="repPlus" class="btn">+ Rep</button>
+        <button id="closeWorkout" class="btn warning">End Workout</button>
+      </div>
+      <video id="cameraFeed" autoplay muted playsinline></video>
+      <p id="postureHint" class="hint">Start camera to receive posture correction feedback.</p>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
