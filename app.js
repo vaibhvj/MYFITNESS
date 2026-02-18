@@ -9,6 +9,10 @@ const proteinProgress = document.getElementById('proteinProgress');
 const proteinText = document.getElementById('proteinText');
 const smartList = document.getElementById('smartList');
 
+const demoDialog = document.getElementById('demoDialog');
+const demoTitle = document.getElementById('demoTitle');
+const demoPreview = document.getElementById('demoPreview');
+
 const workoutDialog = document.getElementById('workoutDialog');
 const liveTitle = document.getElementById('liveTitle');
 const demoImage = document.getElementById('demoImage');
@@ -142,6 +146,12 @@ function renderSmartFeatures() {
   `;
 }
 
+function showAnimatedDemo(title, gifPath) {
+  demoTitle.textContent = `Animated Demo — ${title}`;
+  demoPreview.src = gifPath;
+  demoDialog.showModal();
+}
+
 function startWorkout(title, gifPath) {
   liveTitle.textContent = `Live Workout Mode — ${title}`;
   demoImage.src = gifPath;
@@ -205,7 +215,11 @@ profileForm.addEventListener('submit', (e) => {
 document.getElementById('workoutTable').addEventListener('click', (e) => {
   const btn = e.target.closest('button');
   if (!btn) return;
-  if (btn.classList.contains('demo-btn') || btn.classList.contains('start-btn')) {
+  if (btn.classList.contains('demo-btn')) {
+    showAnimatedDemo(btn.dataset.title, btn.dataset.gif);
+    return;
+  }
+  if (btn.classList.contains('start-btn')) {
     startWorkout(btn.dataset.title, btn.dataset.gif);
   }
 });
@@ -213,6 +227,10 @@ document.getElementById('workoutTable').addEventListener('click', (e) => {
 document.getElementById('repPlus').addEventListener('click', () => {
   reps += 1;
   repCountEl.textContent = reps;
+});
+
+document.getElementById('closeDemo').addEventListener('click', () => {
+  demoDialog.close();
 });
 
 document.getElementById('closeWorkout').addEventListener('click', () => {
